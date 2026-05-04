@@ -50,19 +50,24 @@ $defaults = [
     'company_address' => '',
 ];
 foreach ($defaults as $key => $value) {
-    $row = $db->selectOne('SELECT id FROM site_settings WHERE `key` = ?', [$key]);
+    // site_settings.key IS the primary key — no `id` column exists.
+    $row = $db->selectOne('SELECT `key` FROM site_settings WHERE `key` = ?', [$key]);
     if (!$row) {
         $db->insert('site_settings', ['key' => $key, 'value' => $value]);
     }
 }
 
-// Seed homepage sections
+// Seed homepage sections — schema is (key, title, content JSON, is_active, sort_order)
 $existingSections = (int) $db->scalar('SELECT COUNT(*) FROM homepage_sections');
 if ($existingSections === 0) {
     $db->insert('homepage_sections', [
-        'type' => 'hero',
+        'key' => 'hero',
         'title' => 'Find your perfect domain',
-        'subtitle' => 'Register, transfer, and manage domains with ease.',
+        'content' => json_encode([
+            'subtitle' => 'Register, transfer, and manage domains with ease.',
+            'cta_label' => 'Search domains',
+            'cta_href' => '/domains/search',
+        ], JSON_UNESCAPED_UNICODE),
         'sort_order' => 1,
         'is_active' => 1,
     ]);

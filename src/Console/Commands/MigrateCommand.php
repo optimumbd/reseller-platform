@@ -41,8 +41,12 @@ final class MigrateCommand extends Command
             }
             $this->out("Migrating: {$name}");
             $sql = (string) file_get_contents($file);
-            // Split on semicolons that end a statement (best-effort)
-            $statements = array_filter(array_map('trim', preg_split('/;\s*\n/', $sql) ?: []));
+            // Strip line comments (-- ...) BEFORE splitting so they don't get
+            // concatenated onto the next CREATE TABLE and dropped wholesale by
+            // the str_starts_with('--') filter below.
+            $sql = preg_replace('/--.*$/m', '', $sql) ?? '';
+            // Split on semicolons that end a statement (best-effort).
+            $statements = array_filter(array_map('trim', preg_split('/;\s*(?:\n|$)/', $sql) ?: []));
             foreach ($statements as $stmt) {
                 if ($stmt === '' || str_starts_with($stmt, '--')) {
                     continue;

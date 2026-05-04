@@ -25,7 +25,8 @@ final class DashboardController extends BaseController
             'services' => Service::count(),
             'open_tickets' => Ticket::count('status = "open"'),
             'unpaid_invoices' => Invoice::count('status = "unpaid"'),
-            'orders_today' => Order::count('DATE(created_at) = CURDATE()'),
+            // orders schema uses `placed_at`, not `created_at`
+            'orders_today' => Order::count('DATE(placed_at) = CURDATE()'),
         ];
         $recentOrders = Order::where('1=1 ORDER BY id DESC LIMIT 10');
         $recentUsers = User::where('1=1 ORDER BY id DESC LIMIT 10');

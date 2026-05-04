@@ -28,6 +28,17 @@ $appName = 'Reseller Platform — Install';
         <?php endforeach; ?>
     </div>
 
+    <?php if (!empty($errors)): ?>
+        <div class="mt-6 rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800" role="alert">
+            <div class="font-semibold">Installation could not complete:</div>
+            <ul class="mt-2 list-disc pl-5 space-y-1">
+                <?php foreach ($errors as $key => $msg): ?>
+                    <li><strong class="font-medium"><?= e((string) $key) ?>:</strong> <?= e((string) $msg) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
     <form method="post" action="<?= e(url('/install')) ?>" class="mt-6 bg-white rounded-lg shadow border border-slate-200 p-6 space-y-5">
         <?= csrf_field() ?>
         <fieldset class="space-y-3">
