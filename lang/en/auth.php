@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'invalid_credentials' => 'Invalid email or password.',
+    'account_disabled' => 'Your account is disabled.',
+    'registration_complete' => 'Welcome — your account has been created.',
+    'invalid_token' => 'Invalid or expired token.',
+    'invalid_or_expired_token' => 'This link is invalid or has expired.',
+    'password_reset_sent' => 'If your email is registered, you will receive a reset link.',
+    'password_reset_complete' => 'Your password has been reset.',
+    'magic_link_sent' => 'Sign-in link sent. Check your email.',
+    'email_verified' => 'Email verified successfully.',
+    'invalid_code' => 'Invalid verification code.',
+    '2fa_enabled' => 'Two-factor authentication enabled.',
+    '2fa_disabled' => 'Two-factor authentication disabled.',
+    'login' => 'Sign in',
+    'register' => 'Create account',
+    'forgot_password' => 'Forgot password?',
+    'no_account' => "Don't have an account?",
+    'have_account' => 'Already have an account?',
+    'remember_me' => 'Remember me',
+    'agree_terms' => 'I agree to the Terms of Service and Privacy Policy.',
+    'magic_link' => 'Sign in with magic link',
+    'send_magic_link' => 'Send sign-in link',
+];

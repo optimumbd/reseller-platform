@@ -1,0 +1,12 @@
+# crontab.example — copy entries to your server's crontab.
+# Edit `/path/to/reseller-platform` to match your install path.
+
+# Master scheduler — runs every minute, dispatches the right tasks internally.
+* * * * * cd /path/to/reseller-platform && php bin/console schedule:run >> storage/logs/cron.log 2>&1
+
+# OR if you prefer to run individual jobs (do NOT combine with schedule:run):
+# */15 * * * * cd /path/to/reseller-platform && php bin/console domain:sync >> storage/logs/cron.log 2>&1
+# 0 2 * * *    cd /path/to/reseller-platform && php bin/console invoice:remind >> storage/logs/cron.log 2>&1
+
+# Queue worker — keep one running. On shared hosting, restart every hour with timeout.
+* * * * * cd /path/to/reseller-platform && timeout 55 php bin/console queue:work >> storage/logs/queue.log 2>&1

@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/*
+ |--------------------------------------------------------------------------
+ | CLI Entry Point
+ |--------------------------------------------------------------------------
+ | Run scheduled tasks and one-off commands:
+ |   php bin/console <command> [...args]
+ |
+ | Examples:
+ |   php bin/console migrate
+ |   php bin/console seed
+ |   php bin/console queue:work
+ |   php bin/console schedule:run    # invoke from crontab every minute
+ */
+
+define('BASE_PATH', dirname(__DIR__));
+define('APP_START', microtime(true));
+define('RUNNING_IN_CONSOLE', true);
+
+require BASE_PATH . '/vendor/autoload.php';
+
+use App\Console\Kernel;
+use App\Core\App;
+
+$app = App::boot(BASE_PATH);
+$kernel = new Kernel($app);
+exit($kernel->handle($argv));
