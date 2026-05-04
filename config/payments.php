@@ -56,6 +56,14 @@ return [
             'private_key' => env('NAGAD_PRIVATE_KEY'),
             'sandbox' => filter_var(env('NAGAD_SANDBOX', true), FILTER_VALIDATE_BOOLEAN),
         ],
+        'paykureghor' => [
+            'class' => \App\Services\Payment\Drivers\PaykureghorGateway::class,
+            'enabled' => (bool) env('PAYKUREGHOR_API_KEY'),
+            'api_key' => env('PAYKUREGHOR_API_KEY'),
+            'secret_key' => env('PAYKUREGHOR_SECRET_KEY'),
+            'brand_key' => env('PAYKUREGHOR_BRAND_KEY'),
+            'base_url' => env('PAYKUREGHOR_BASE_URL'),
+        ],
         'wallet' => [
             'class' => \App\Services\Payment\WalletPayment::class,
             'enabled' => true,
