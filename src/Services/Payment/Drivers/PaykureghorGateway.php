@@ -37,20 +37,21 @@ use App\Services\Payment\Contracts\PaymentGatewayInterface;
  * the success_url/cancel_url callback (query string or body) and re-verifies
  * by calling the verify endpoint.
  */
-final class PaykureghorGateway implements PaymentGatewayInterface
+class PaykureghorGateway implements PaymentGatewayInterface
 {
-    private const PRODUCTION_BASE = 'https://checkout.paykureghor.com';
+    protected const PRODUCTION_BASE = 'https://checkout.paykureghor.com';
 
     /** @var array<string,mixed> */
-    private array $cfg;
-    private HttpClientInterface $http;
+    protected array $cfg;
+    protected HttpClientInterface $http;
 
     /**
-     * @param array<string,mixed>|null $cfg overrides config('payments.gateways.paykureghor')
+     * @param array<string,mixed>|null $cfg overrides config('payments.gateways.<name>')
      */
     public function __construct(?array $cfg = null, ?HttpClientInterface $http = null)
     {
-        $this->cfg = $cfg ?? (array) (config('payments.gateways.paykureghor') ?? config('payments.paykureghor') ?? []);
+        $key = $this->name();
+        $this->cfg = $cfg ?? (array) (config('payments.gateways.' . $key) ?? config('payments.' . $key) ?? []);
         $this->http = $http ?? new Client();
     }
 
@@ -59,19 +60,28 @@ final class PaykureghorGateway implements PaymentGatewayInterface
         return 'paykureghor';
     }
 
+    /**
+     * Human-readable brand label, used in error messages. Subclasses
+     * override to rebrand the same driver under a different name.
+     */
+    protected function brandName(): string
+    {
+        return 'Pay KureGhor';
+    }
+
     public function baseUrl(): string
     {
         $override = trim((string) ($this->cfg['base_url'] ?? ''));
         if ($override !== '') {
             return rtrim($override, '/');
         }
-        return self::PRODUCTION_BASE;
+        return static::PRODUCTION_BASE;
     }
 
     public function createCheckout(Invoice $invoice, array $options = []): array
     {
         if (!$this->isConfigured()) {
-            return ['success' => false, 'error' => 'Pay KureGhor is not configured'];
+            return ['success' => false, 'error' => $this->brandName() . ' is not configured'];
         }
         $amount = (float) ($options['amount'] ?? $invoice->total ?? 0);
         if ($amount <= 0) {
@@ -82,9 +92,9 @@ final class PaykureghorGateway implements PaymentGatewayInterface
             'cus_email' => (string) ($options['customer_email'] ?? 'no-reply@example.com'),
             'amount' => $this->formatAmount($amount),
             'success_url' => (string) ($options['success_url']
-                ?? url('/webhooks/paykureghor?result=success&invoice=' . ($invoice->id ?? ''))),
+                ?? url('/webhooks/' . $this->name() . '?result=success&invoice=' . ($invoice->id ?? ''))),
             'cancel_url' => (string) ($options['cancel_url']
-                ?? url('/webhooks/paykureghor?result=cancel&invoice=' . ($invoice->id ?? ''))),
+                ?? url('/webhooks/' . $this->name() . '?result=cancel&invoice=' . ($invoice->id ?? ''))),
         ];
 
         $metadata = $options['metadata'] ?? [
@@ -102,14 +112,14 @@ final class PaykureghorGateway implements PaymentGatewayInterface
         );
         $json = $resp->json();
         if (!$resp->ok() || !is_array($json)) {
-            return ['success' => false, 'error' => $this->extractError($json) ?? ('Pay KureGhor HTTP ' . $resp->status)];
+            return ['success' => false, 'error' => $this->extractError($json) ?? ($this->brandName() . ' HTTP ' . $resp->status)];
         }
         if (!($json['status'] ?? false)) {
-            return ['success' => false, 'error' => (string) ($json['message'] ?? 'Pay KureGhor create failed')];
+            return ['success' => false, 'error' => (string) ($json['message'] ?? ($this->brandName() . ' create failed'))];
         }
         $paymentUrl = (string) ($json['payment_url'] ?? '');
         if ($paymentUrl === '') {
-            return ['success' => false, 'error' => 'Pay KureGhor did not return a payment_url'];
+            return ['success' => false, 'error' => $this->brandName() . ' did not return a payment_url'];
         }
         return [
             'success' => true,
@@ -128,7 +138,7 @@ final class PaykureghorGateway implements PaymentGatewayInterface
     {
         $verified = $this->verify($paymentReference);
         if (!($verified['success'] ?? false)) {
-            return ['success' => false, 'error' => (string) ($verified['error'] ?? 'Pay KureGhor verify failed')];
+            return ['success' => false, 'error' => (string) ($verified['error'] ?? ($this->brandName() . ' verify failed'))];
         }
         if ($amount > 0) {
             $verifiedAmount = (float) ($verified['amount'] ?? 0);
@@ -148,7 +158,7 @@ final class PaykureghorGateway implements PaymentGatewayInterface
     {
         return [
             'success' => false,
-            'error' => 'Pay KureGhor refunds are not exposed via API; please refund from the merchant dashboard.',
+            'error' => $this->brandName() . ' refunds are not exposed via API; please refund from the merchant dashboard.',
         ];
     }
 
@@ -193,7 +203,7 @@ final class PaykureghorGateway implements PaymentGatewayInterface
     public function verify(string $transactionId): array
     {
         if (!$this->isConfigured()) {
-            return ['success' => false, 'error' => 'Pay KureGhor is not configured'];
+            return ['success' => false, 'error' => $this->brandName() . ' is not configured'];
         }
         if ($transactionId === '') {
             return ['success' => false, 'error' => 'transaction_id is required'];
@@ -205,7 +215,7 @@ final class PaykureghorGateway implements PaymentGatewayInterface
         );
         $json = $resp->json();
         if (!$resp->ok() || !is_array($json)) {
-            return ['success' => false, 'error' => $this->extractError($json) ?? ('Pay KureGhor HTTP ' . $resp->status)];
+            return ['success' => false, 'error' => $this->extractError($json) ?? ($this->brandName() . ' HTTP ' . $resp->status)];
         }
         $status = strtoupper((string) ($json['status'] ?? ''));
         if (!in_array($status, ['COMPLETED', 'SUCCESS'], true)) {

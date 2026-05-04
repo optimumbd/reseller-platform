@@ -64,6 +64,14 @@ return [
             'brand_key' => env('PAYKUREGHOR_BRAND_KEY'),
             'base_url' => env('PAYKUREGHOR_BASE_URL'),
         ],
+        'rokopay' => [
+            'class' => \App\Services\Payment\Drivers\RokopayGateway::class,
+            'enabled' => (bool) env('ROKOPAY_API_KEY'),
+            'api_key' => env('ROKOPAY_API_KEY'),
+            'secret_key' => env('ROKOPAY_SECRET_KEY'),
+            'brand_key' => env('ROKOPAY_BRAND_KEY'),
+            'base_url' => env('ROKOPAY_BASE_URL'),
+        ],
         'wallet' => [
             'class' => \App\Services\Payment\WalletPayment::class,
             'enabled' => true,
