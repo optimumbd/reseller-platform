@@ -6,6 +6,11 @@ use App\Core\App;
 use App\Core\Response;
 use App\Core\View;
 
+// NOTE: Throughout this file, references to other application classes use
+// fully-qualified names with a leading backslash (e.g. \App\Models\User)
+// because the `use App\Core\App;` import above makes `App` an alias for
+// `App\Core\App`, which would mis-resolve any unprefixed `App\...` reference.
+
 if (!function_exists('app')) {
     function app(?string $abstract = null): mixed
     {
@@ -184,7 +189,7 @@ if (!function_exists('auth_user')) {
      */
     function auth_user(): ?array
     {
-        return App\Models\User::current();
+        return \App\Models\User::current();
     }
 }
 
@@ -206,7 +211,7 @@ if (!function_exists('is_admin')) {
 if (!function_exists('__')) {
     function __(string $key, array $replace = []): string
     {
-        return App\Services\TranslationService::translate($key, $replace);
+        return \App\Services\TranslationService::translate($key, $replace);
     }
 }
 
@@ -215,7 +220,7 @@ if (!function_exists('money')) {
     {
         $cur = $currency ?? (string) config('currency.default', 'USD');
         $amount = (float) $amount;
-        return App\Helpers\PriceHelper::format($amount, $cur);
+        return \App\Helpers\PriceHelper::format($amount, $cur);
     }
 }
 
@@ -233,6 +238,13 @@ if (!function_exists('include_view')) {
     }
 }
 
+if (!function_exists('layout')) {
+    function layout(string $name = 'layouts/app', array $data = []): void
+    {
+        View::extend($name, $data);
+    }
+}
+
 if (!function_exists('now')) {
     function now(): string
     {
@@ -243,7 +255,7 @@ if (!function_exists('now')) {
 if (!function_exists('uuid')) {
     function uuid(): string
     {
-        return App\Helpers\UuidHelper::v4();
+        return \App\Helpers\UuidHelper::v4();
     }
 }
 
@@ -293,6 +305,6 @@ if (!function_exists('config_setting')) {
      */
     function config_setting(string $key, mixed $default = null): mixed
     {
-        return App\Services\SettingService::get($key, $default);
+        return \App\Services\SettingService::get($key, $default);
     }
 }
