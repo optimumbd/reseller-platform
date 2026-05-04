@@ -18,9 +18,10 @@ return [
             'sandbox' => filter_var(env('NAMECHEAP_SANDBOX', true), FILTER_VALIDATE_BOOLEAN),
         ],
         'spaceship' => [
-            'class' => \App\Services\Registrar\SpaceshipRegistrar::class,
+            'class' => \App\Services\Registrar\Drivers\SpaceshipRegistrar::class,
             'api_key' => env('SPACESHIP_API_KEY'),
             'api_secret' => env('SPACESHIP_API_SECRET'),
+            'base_url' => env('SPACESHIP_BASE_URL'),
         ],
         'cloudflare' => [
             'class' => \App\Services\Registrar\CloudflareRegistrar::class,
