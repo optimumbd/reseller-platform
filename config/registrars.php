@@ -25,6 +25,7 @@ return [
         'cloudflare' => [
             'class' => \App\Services\Registrar\CloudflareRegistrar::class,
             'api_token' => env('CLOUDFLARE_API_TOKEN'),
+            'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
         ],
         'opensrs' => [
             'class' => \App\Services\Registrar\OpenSRSRegistrar::class,

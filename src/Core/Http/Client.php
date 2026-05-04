@@ -7,7 +7,7 @@ namespace App\Core\Http;
 /**
  * Thin curl-based HTTP client (no Guzzle dependency — runs on shared hosting).
  */
-final class Client
+class Client implements HttpClientInterface
 {
     public function __construct(private readonly int $timeout = 30) {}
 
@@ -100,25 +100,5 @@ final class Client
             }
         }
         return $headers;
-    }
-}
-
-final class Response
-{
-    public function __construct(
-        public readonly int $status,
-        /** @var array<string,string> */
-        public readonly array $headers,
-        public readonly string $body,
-    ) {}
-
-    public function ok(): bool
-    {
-        return $this->status >= 200 && $this->status < 300;
-    }
-
-    public function json(): mixed
-    {
-        return json_decode($this->body, true);
     }
 }
