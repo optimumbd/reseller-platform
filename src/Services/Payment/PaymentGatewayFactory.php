@@ -8,6 +8,7 @@ use App\Services\Payment\Contracts\PaymentGatewayInterface;
 use App\Services\Payment\Drivers\BkashGateway;
 use App\Services\Payment\Drivers\ManualGateway;
 use App\Services\Payment\Drivers\NagadGateway;
+use App\Services\Payment\Drivers\PaykureghorGateway;
 use App\Services\Payment\Drivers\PaypalGateway;
 use App\Services\Payment\Drivers\SslcommerzGateway;
 use App\Services\Payment\Drivers\StripeGateway;
@@ -23,6 +24,7 @@ final class PaymentGatewayFactory
             'bkash' => new BkashGateway(),
             'nagad' => new NagadGateway(),
             'sslcommerz' => new SslcommerzGateway(),
+            'paykureghor' => new PaykureghorGateway(),
             'wallet' => new WalletGateway(),
             default => new ManualGateway(),
         };
